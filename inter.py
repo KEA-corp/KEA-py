@@ -1,5 +1,18 @@
-from ast import arg
+'''
+--|~|--|~|--|~|--|~|--|~|--|~|--
 
+██  ████        ██████        ██
+████    ██     ██           ████
+██      ██   ████████     ██  ██
+████████       ██       ██    ██
+██             ██       █████████
+██             ██             ██
+██
+ - codé en : UTF-8
+ - langage : python 3
+ - GitHub  : github.com/pf4-DEV
+--|~|--|~|--|~|--|~|--|~|--|~|--
+'''
 
 version = "1.1.49"
 
@@ -13,7 +26,19 @@ def empty(liste, index):
         return False
 
 def isset(variable):
-    return True if variable in locals() or variable in globals() else False
+    return variable in locals() or variable in globals()
+
+def convert(entree: str):
+    def type_find(entree: str) -> type:
+        if entree.isdigit():
+            return int
+        if entree.replace('.', '', 1).isdigit():
+            return float
+        elif entree in {'True', 'False'}:
+            return bool
+        else:
+            return str
+    return type_find(entree)(entree)
 
 def setsauter(valeur, nom):
     debug_print(f"{nom} → sauter = '{valeur}'\n")
@@ -23,9 +48,8 @@ def getvar(name):
     global VAR
     if empty(VAR, name):
         return VAR[name]
-    else:
-        print(f"variable {name} non trouvée")
-        return ""
+    print(f"variable {name} non trouvée")
+    return ""
 
 def debug_print_all():
     print("Non implémenté")
@@ -63,13 +87,10 @@ def save_fonction(name, code, i):
     FUNCTIONS[name] = [code, i]
 
 def bcl_ctrl(code, i, nom, nb):
-    codetoloop = []
-    for j in range(i+1, len(code)):
-        codetoloop.append(code[j])
-    
+    codetoloop = [code[j] for j in range(i+1, len(code))]
     return codeinloop(codetoloop, nom, nb)
 
-def codeinloop(code, nom ,max):
+def codeinloop(code, nom ,max): # sourcery no-metrics
     global DEBUG, FUNCTIONS
     debug_print(f"DEMARAGE DE LA BOUCLE '{nom}'\n")
     sauter = setsauter("", nom)
@@ -82,7 +103,7 @@ def codeinloop(code, nom ,max):
 
             args = ligne.split(" ")
             mode = args[0]
-            
+
             if sauter == "" or (mode == "E" and args[1] == sauter):
                 if sauter != "":
                     sauter = setsauter("", nom)
@@ -93,7 +114,7 @@ def codeinloop(code, nom ,max):
                 elif mode == "V":
                     var = args[1]
                     try:
-                        val = int(args[2])
+                        val = convert(args[2])
                     except:
                         val = args[2]
                     setvar(var, val, nom)
@@ -112,10 +133,7 @@ def codeinloop(code, nom ,max):
                     setvar(args[1], result, nom)
 
                 elif mode == "Z":
-                    dobreak = 1
-                    if (isset(args[1])):
-                        dobreak = getvar(args[1])
-
+                    dobreak = getvar(args[1]) if (isset(args[1])) else 1
                 elif mode == "B":
                     setvar(args[1], compar(args[3], args[2], args[4]), nom)
 
@@ -132,14 +150,14 @@ def codeinloop(code, nom ,max):
                         fonc_code = FUNCTIONS[fonction][0]
                         oldi = FUNCTIONS[fonction][1]
                         bcl_ctrl(fonc_code, oldi, args[1], 1)
-                    
+
                     else:
                         print("Fonction fonction non trouvée")
 
                 elif mode == "D":
                     if args[1] == "on":
                         DEBUG = True
-                    
+
                     elif args[1] == "off":
                         DEBUG = False
 
@@ -149,7 +167,7 @@ def codeinloop(code, nom ,max):
                 elif mode == "R":
                     rand = rand(0, getvar(args[2]))
                     setvar(args[1], rand, nom)
-                
+
 
                 elif mode == "X":
                     if getvar(args[2]) == True:
@@ -159,16 +177,16 @@ def codeinloop(code, nom ,max):
                     else:
                         sauter = setsauter(args[1], nom)
                         debug_print("condition non remplie: sauter\n")
-                    
-                
+
+
 
                 elif mode == "S":
                     if empty(args, 1):
                         print("\n")
-                    
+
                     else:
                         print("\033[93m" + args[1].replace("_", " ", ) + "\033[0m", end = "")
-                    
+
                     if DEBUG:
                         print("\n")
 
@@ -176,7 +194,7 @@ def codeinloop(code, nom ,max):
                     user_input(args[1], nom)
 
                 elif mode == "A":
-                    print("\033[93m" + str(getvar(args[1])) + "\033[0m", end = "")
+                    print(f"\033[93m{getvar(args[1])}\033[0m", end = "")
                     if DEBUG:
                         print("\n")
 
@@ -185,7 +203,6 @@ def codeinloop(code, nom ,max):
 
             else:
                 debug_print("nom → passer 'ligne'\n")
-            
+
             if dobreak > 0:
                 return dobreak - 1
-
