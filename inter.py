@@ -133,7 +133,8 @@ def codeinloop(code, nom ,max): # sourcery no-metrics
                     setvar(args[1], result, nom)
 
                 elif mode == "Z":
-                    dobreak = getvar(args[1]) if (isset(args[1])) else 1
+                    dobreak = getvar(args[1]) if (len(args[1]) != 1) else 1
+        
                 elif mode == "B":
                     setvar(args[1], compar(args[3], args[2], args[4]), nom)
 
@@ -178,10 +179,8 @@ def codeinloop(code, nom ,max): # sourcery no-metrics
                         sauter = setsauter(args[1], nom)
                         debug_print("condition non remplie: sauter\n")
 
-
-
                 elif mode == "S":
-                    if empty(args, 1):
+                    if len(args) == 1:
                         print("\n")
 
                     else:
@@ -206,3 +205,7 @@ def codeinloop(code, nom ,max): # sourcery no-metrics
 
             if dobreak > 0:
                 return dobreak - 1
+
+start("""
+S coucou
+""")
