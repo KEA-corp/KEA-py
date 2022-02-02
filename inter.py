@@ -19,14 +19,6 @@ version = "1.1.49"
 compar = lambda comparateur, var1, var2 : eval(f"var1 {comparateur} var2", locals())
 calc = lambda calcul, var1, var2 : eval(f"var1 {calcul} var2", locals())
 
-def empty(liste, index):
-    try:
-        return liste[index]
-    except:
-        return False
-
-def isset(variable):
-    return variable in locals() or variable in globals()
 
 def convert(entree: str):
     def type_find(entree: str) -> type:
@@ -46,10 +38,11 @@ def setsauter(valeur, nom):
 
 def getvar(name):
     global VAR
-    if empty(VAR, name):
+    try:
         return VAR[name]
-    print(f"variable {name} non trouvée")
-    return ""
+    except KeyError:
+        print(f"variable {name} non trouvée")
+        return ""
 
 def debug_print_all():
     print("Non implémenté")
@@ -95,7 +88,7 @@ def codeinloop(code, nom ,max): # sourcery no-metrics
     debug_print(f"DEMARAGE DE LA BOUCLE '{nom}'\n")
     sauter = setsauter("", nom)
     dobreak = 0
-    for rep in range(max):
+    for rep in range(int(max)):
         for i in range(len(code)):
             ligne = code[i].strip()
 
@@ -129,11 +122,11 @@ def codeinloop(code, nom ,max): # sourcery no-metrics
                         break
 
                 elif mode == "C":
-                    result = calc(args[3], getvar(args[2]), getvar(args[4]))
+                    result = calc(args[3].replace("^", "**"), getvar(args[2]), getvar(args[4]))
                     setvar(args[1], result, nom)
 
                 elif mode == "Z":
-                    dobreak = getvar(args[1]) if (len(args[1]) != 1) else 1
+                    dobreak = getvar(args[1]) if (len(args[1]) > 1) else 1
         
                 elif mode == "B":
                     setvar(args[1], compar(args[3], args[2], args[4]), nom)
@@ -147,12 +140,12 @@ def codeinloop(code, nom ,max): # sourcery no-metrics
 
                 elif mode == "T":
                     fonction = args[1]
-                    if empty(FUNCTIONS, fonction):
+                    try:
                         fonc_code = FUNCTIONS[fonction][0]
                         oldi = FUNCTIONS[fonction][1]
                         bcl_ctrl(fonc_code, oldi, args[1], 1)
 
-                    else:
+                    except KeyError:
                         print("Fonction fonction non trouvée")
 
                 elif mode == "D":
@@ -203,9 +196,42 @@ def codeinloop(code, nom ,max): # sourcery no-metrics
             else:
                 debug_print("nom → passer 'ligne'\n")
 
-            if dobreak > 0:
-                return dobreak - 1
+            try:
+                if dobreak > 0:
+                    return dobreak - 1
+            except:
+                pass
 
 start("""
-S coucou
+S runing
+V i 1
+V 0 0
+V 0.5 0.5
+V 1 1
+V 2 2
+V to 30000
+L nbr to
+    C i i + 1
+    C mod i % 2
+    B inpair mod != 0
+    X done inpair
+        B good 1 == 1
+        C max i ^ 0.5
+        C max max - 1
+        V x 1
+        L all max
+            C x x + 1
+            C mod i % x
+            B bad mod == 0
+            X no bad
+                B good 0 == 1
+                Z
+                E no
+            E all
+        X prem good
+            A i
+            S
+            E prem
+        E done
+    E nbr
 """)
