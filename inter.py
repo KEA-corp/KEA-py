@@ -16,9 +16,39 @@
 
 version = "1.1.49"
 
-compar = lambda comparateur, var1, var2 : eval(f"var1 {comparateur} var2", locals())
-calc = lambda calcul, var1, var2 : eval(f"var1 {calcul} var2", locals())
+def compar(comparateur, var1, var2):
+    if comparateur in ["==", "="]:
+        return var1 == var2
+    elif comparateur == "!=":
+        return var1 != var2
+    elif comparateur == ">":
+        return var1 > var2
+    elif comparateur == "<":
+        return var1 < var2
+    elif comparateur == ">=":
+        return var1 >= var2
+    elif comparateur == "<=":
+        return var1 <= var2
+    else:
+        print(f"comparateur {comparateur} non reconnu")
+        return False
 
+def calc(operateur, var1, var2):
+    if operateur == "+":
+        return var1 + var2
+    elif operateur == "-":
+        return var1 - var2
+    elif operateur == "*":
+        return var1 * var2
+    elif operateur == "/":
+        return var1 / var2
+    elif operateur in ["**", "^"]:
+        return var1 ** var2
+    elif operateur == "%":
+        return var1 % var2
+    else:
+        print(f"opérateur {operateur} non reconnu")
+        return 0
 
 def convert(entree: str):
     def type_find(entree: str) -> type:
@@ -159,7 +189,8 @@ def codeinloop(code, nom ,max): # sourcery no-metrics
                         debug_print_all()
 
                 elif mode == "R":
-                    rand = rand(0, getvar(args[2]))
+                    from random import randint
+                    rand = randint(0, getvar(args[2]))
                     setvar(args[1], rand, nom)
 
 
@@ -203,35 +234,47 @@ def codeinloop(code, nom ,max): # sourcery no-metrics
                 pass
 
 start("""
-S runing
-V i 1
-V 0 0
-V 0.5 0.5
-V 1 1
-V 2 2
-V to 30000
-L nbr to
-    C i i + 1
-    C mod i % 2
-    B inpair mod != 0
-    X done inpair
-        B good 1 == 1
-        C max i ^ 0.5
-        C max max - 1
-        V x 1
-        L all max
-            C x x + 1
-            C mod i % x
-            B bad mod == 0
-            X no bad
-                B good 0 == 1
-                Z
-                E no
-            E all
-        X prem good
-            A i
-            S
-            E prem
-        E done
-    E nbr
+V 100 100
+V max 100000
+
+F info
+    S trouvez_un_nombre_entre_0_et_100
+    S
+    A tofind
+    E info
+
+R tofind 100
+T info
+
+L m max
+    S _>>_
+    I userval
+
+
+    B cond tofind > userval
+    X nons cond
+        S essayer_plus_grand
+        E nons
+
+    A tofind
+    S _<_
+    A userval
+    S _=_
+
+    B cond tofind < userval
+    A cond
+    S
+    X noni cond
+        S essayer_plus_petit
+        E noni
+
+
+    B cond tofind == userval
+    X oui cond
+        S bravo!
+        S
+        R tofind 100
+        T info
+        E oui
+    E m
 """)
