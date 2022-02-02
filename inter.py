@@ -78,7 +78,7 @@ def debug_print_all():
     print("Non implémenté")
 
 def user_input(var, ACTIVE):
-    setvar(var, input(), ACTIVE)
+    setvar(var, convert(input()), ACTIVE)
 
 def setvar(name, valeur, ACTIVE):
     global VAR
@@ -152,14 +152,14 @@ def codeinloop(code, nom ,max): # sourcery no-metrics
                         break
 
                 elif mode == "C":
-                    result = calc(args[3].replace("^", "**"), getvar(args[2]), getvar(args[4]))
+                    result = calc(args[3], getvar(args[2]), getvar(args[4]))
                     setvar(args[1], result, nom)
 
                 elif mode == "Z":
-                    dobreak = getvar(args[1]) if (len(args[1]) > 1) else 1
+                    dobreak = getvar(args[1]) if (len(args) > 1) else 1
         
                 elif mode == "B":
-                    setvar(args[1], compar(args[3], args[2], args[4]), nom)
+                    setvar(args[1], compar(args[3], getvar(args[2]), getvar(args[4])), nom)
 
                 elif mode == "H":
                     setvar(args[1], getvar(args[2]), nom)
@@ -205,7 +205,7 @@ def codeinloop(code, nom ,max): # sourcery no-metrics
 
                 elif mode == "S":
                     if len(args) == 1:
-                        print("\n")
+                        print()
 
                     else:
                         print("\033[93m" + args[1].replace("_", " ", ) + "\033[0m", end = "")
@@ -234,47 +234,36 @@ def codeinloop(code, nom ,max): # sourcery no-metrics
                 pass
 
 start("""
-V 100 100
-V max 100000
-
-F info
-    S trouvez_un_nombre_entre_0_et_100
-    S
-    A tofind
-    E info
-
-R tofind 100
-T info
-
-L m max
-    S _>>_
-    I userval
-
-
-    B cond tofind > userval
-    X nons cond
-        S essayer_plus_grand
-        E nons
-
-    A tofind
-    S _<_
-    A userval
-    S _=_
-
-    B cond tofind < userval
-    A cond
-    S
-    X noni cond
-        S essayer_plus_petit
-        E noni
-
-
-    B cond tofind == userval
-    X oui cond
-        S bravo!
-        S
-        R tofind 100
-        T info
-        E oui
-    E m
+S runing
+V i 1
+V 0 0
+V 0.5 0.5
+V 1 1
+V 2 2
+V 3 3
+V to 30000
+L nbr to
+    C i i + 1
+    C mod i % 2
+    B inpair mod != 0
+    X done inpair
+        B good 1 == 1
+        C max i ^ 0.5
+        C max max - 1
+        V x 1
+        L all max
+            C x x + 1
+            C mod i % x
+            B bad mod == 0
+            X no bad
+                B good 0 == 1
+                Z 3
+                E no
+            E all
+        X prem good
+            A i
+            S
+            E prem
+        E done
+    E nbr
 """)
