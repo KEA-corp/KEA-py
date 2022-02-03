@@ -208,7 +208,7 @@ def codeinloop(code, nom ,max): # sourcery no-metrics
                         print()
 
                     else:
-                        print("\033[93m" + args[1].replace("_", " ", ) + "\033[0m", end = "")
+                        print(f"\033[93m{args[1].replace('_', ' ', )}\033[0m", end = "")
 
                     if DEBUG:
                         print("\n")
