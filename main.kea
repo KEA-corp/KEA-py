@@ -1,0 +1,6 @@
+V a 2
+V b 3
+B sortie a > b
+C sortie2 a + b
+R test 14
+S bravo !
